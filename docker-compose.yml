@@ -6,30 +6,34 @@ services:
     image: strapi/strapi
     environment:
       - APP_NAME=strapi-app
-      - DATABASE_CLIENT=mongo
+      - DATABASE_CLIENT=mysql
       - DATABASE_HOST=db
-      - DATABASE_PORT=27017
-      - DATABASE_NAME=strapi
-      - DATABASE_USERNAME=
-      - DATABASE_PASSWORD=
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=mydb
+      - DATABASE_USERNAME=myuser
+      - DATABASE_PASSWORD=password
       - DATABASE_SSL=false
-      - DATABASE_AUTHENTICATION_DATABASE=strapi
+      - DATABASE_AUTHENTICATION_DATABASE=mydb
       - HOST=localhost
     ports:
       - 1337:1337
     volumes:
       - ./strapi-app:/usr/src/api/strapi-app
-      #- /usr/src/api/strapi-app/node_modules
+#      - /usr/src/api/strapi-app/node_modules
     depends_on:
       - db
     restart: always
 
   db:
-    image: mongo
-    environment:
-      - MONGO_INITDB_DATABASE=strapi
-    ports:
-      - 27017:27017
-    volumes:
-      - ./db:/data/db
+    image: mysql:5.7
     restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: password
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db_data:/var/lib/mysql
